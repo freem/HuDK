@@ -6,7 +6,7 @@ PCEAS = pceas
 
 EXAMPLE_PCEAS = ./example/pceas
 SOURCE_PCEAS  = $(EXAMPLE_PCEAS)/dummy.s
-OUTPUT_PCEAS  = $(EXAMPLE_PCEAS)/dummy.pce
+OUTPUT_PCEAS  = $(EXAMPLE_PCEAS)/dummy_pceas.pce
 SYMBOLS_PCEAS = $(EXAMPLE_PCEAS)/dummy.sym
 
 PCEAS_FLAGS = -I example -I include --raw
@@ -19,7 +19,7 @@ EXAMPLE_CA65 = ./example/ca65
 SOURCE_CA65  = $(EXAMPLE_CA65)/dummy.s
 OBJECT_CA65  = $(EXAMPLE_CA65)/dummy.o
 LINK_CA65    = $(EXAMPLE_CA65)/dummy.cfg
-OUTPUT_CA65  = $(EXAMPLE_CA65)/dummy.pce
+OUTPUT_CA65  = $(EXAMPLE_CA65)/dummy_ca65.pce
 
 CA65_FEATURES = --feature bracket_as_indirect
 CA65_INCLUDES = -I example -I include
