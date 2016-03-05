@@ -36,10 +36,24 @@ print_char:
 @go:
     clc
     adc     <font_base
+	.ifdef MAGICKIT
     sta     video_data_l
+	.else
+		.ifdef CA65
+			; hacky ca65 fix: absolute addressing for page 0
+			sta     a:video_data_l
+		.endif
+	.endif
     cla
     adc     <font_base+1
+	.ifdef MAGICKIT
     sta     video_data_h
+	.else
+		.ifdef CA65
+			; hacky ca65 fix: absolute addressing for page 0
+			sta     a:video_data_h
+		.endif
+	.endif
     rts
 
 ;;
@@ -62,10 +76,24 @@ print_digit:
     adc    #FONT_DIGIT_INDEX
     clc
     adc     <font_base
+    .ifdef MAGICKIT
     sta     video_data_l
+	.else
+		.ifdef CA65
+			; hacky ca65 fix: absolute addressing for page 0
+			sta     a:video_data_l
+		.endif
+	.endif
     cla
     adc     <font_base+1
+    .ifdef MAGICKIT
     sta     video_data_h
+	.else
+		.ifdef CA65
+			; hacky ca65 fix: absolute addressing for page 0
+			sta     a:video_data_h
+		.endif
+	.endif
     rts
 
 ;;
@@ -89,7 +117,14 @@ print_string:
 @print_loop:
     cly
 @print_line:
+	.ifdef MAGICKIT
         lda    [_si], Y
+	.else
+		.ifdef CA65
+			; hacky ca65 fix: use <_si to force zero page
+			lda    [<_si], Y
+		.endif
+	.endif
         beq    @end             ; end of line
         iny
         cmp    #$0a             ; newline

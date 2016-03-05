@@ -43,10 +43,27 @@ font_load:
     beq    @l3
     cly
 @l0:
+	.ifdef MAGICKIT
         lda    [_si], Y
-        sta    video_data_l     ; bitplane #0
+		sta    video_data_l     ; bitplane #0
+	.else
+		.ifdef CA65
+			; hacky ca65 fixes:
+			; 1) use <_si to force zero page
+			; 2) addresses in page 0 need absolute addressing (a:$0000)
+			lda    [<_si], Y
+			sta    a:video_data_l     ; bitplane #0
+		.endif
+	.endif
         eor    #$ff
+	.ifdef MAGICKIT
         sta    video_data_h     ; bitplane #1
+	.else
+		.ifdef CA65
+			; hacky ca65 fix: addresses in page 0 need absolute addressing (a:$0000)
+			sta    a:video_data_h     ; bitplane #1
+		.endif
+	.endif
         iny
         cpy    #$08
         bne    @l2

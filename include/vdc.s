@@ -11,7 +11,20 @@
 ;;
 vdc_set_read:
     vdc_reg #VDC_MARR
+
+	.ifdef MAGICKIT
     stw    <_di, video_data
+	.else
+		.ifdef CA65
+			; hacky ca65 fixes:
+			; 1) use <_di to force zero page, requiring a +1 for the other half
+			; 2) addresses in page 0 need absolute addressing (a:$0000)
+			lda <_di
+			sta a:video_data_l
+			lda <_di+1
+			sta a:video_data_h
+		.endif
+	.endif
     vdc_reg #VDC_DATA
     rts
 
@@ -24,7 +37,19 @@ vdc_set_read:
 ;;
 vdc_set_write:
     vdc_reg #VDC_MAWR
+	.ifdef MAGICKIT
     stw    <_di, video_data
+	.else
+		.ifdef CA65
+			; hacky ca65 fixes:
+			; 1) use <_di to force zero page, requiring a +1 for the other half
+			; 2) addresses in page 0 need absolute addressing (a:$0000)
+			lda <_di
+			sta a:video_data_l
+			lda <_di+1
+			sta a:video_data_h
+		.endif
+	.endif
     vdc_reg #VDC_DATA
     rts
 
@@ -40,7 +65,13 @@ vdc_set_bat_size:
     pha
     vdc_reg #VDC_MWR
     pla
-    sta    video_data_l
+	.ifdef MAGICENGINE
+		sta    video_data_l
+	.else
+		.ifdef CA65
+			sta    a:video_data_l
+		.endif
+	.endif
     ; compute BAT dimensions
     lsr    A
     lsr    A
@@ -124,11 +155,25 @@ vdc_load_data:
     beq    @l2
     cly
 @l0:
+	.ifdef MAGICKIT
         lda    [_si], Y
         sta    video_data_l
         iny
         lda    [_si], Y
         sta    video_data_h
+	.else
+		.ifdef CA65
+			; hacky ca65 fixes:
+			; 1) use <_si to force zero page
+			; 2) addresses in page 0 need absolute addressing (a:$0000)
+			lda    [<_si], Y
+			sta    a:video_data_l
+			iny
+			lda    [<_si], Y
+			sta    a:video_data_h
+		.endif
+	.endif
+
         iny
         bne    @l1
             inc    <_si+1
@@ -158,13 +203,31 @@ vdc_init:
     cly
 @l0:
     lda    @vdc_init_table, Y
+	.ifdef MAGICKIT
     sta    video_reg
+	.else
+		.ifdef CA65
+			sta    a:video_reg
+		.endif
+	.endif
     iny
     lda    @vdc_init_table, Y
+	.ifdef MAGICKIT
     sta    video_data_l
+	.else
+		.ifdef CA65
+			sta    a:video_data_l
+		.endif
+	.endif
     iny
     lda    @vdc_init_table, Y
+	.ifdef MAGICKIT
     sta    video_data_h
+	.else
+		.ifdef CA65
+			sta    a:video_data_h
+		.endif
+	.endif
     iny
     cpy    #36
     bne    @l0
@@ -193,12 +256,12 @@ vdc_init:
     .endif
   .endif
     st0    #VDC_DATA
-    ldy    #high(@tile_addr)
+    ldy    #.hibyte(@tile_addr)
 @l1:
     clx
 @l2:
-        st1    #low(@tile_addr>>4)
-        st2    #high(@tile_addr>>4)
+        st1    #.lobyte(@tile_addr>>4)
+        st2    #.hibyte(@tile_addr>>4)
         inx
         bne    @l2
     dey
@@ -206,8 +269,8 @@ vdc_init:
 
     ; clear tile
     st0    #VDC_MAWR
-    st1    #low(@tile_addr)
-    st2    #high(@tile_addr)
+    st1    #.lobyte(@tile_addr)
+    st2    #.hibyte(@tile_addr)
 
     st0    #VDC_DATA
     st1    #$00
@@ -236,6 +299,6 @@ vdc_init:
     .byte $0E, $0C, $00             ; VCR +
     .byte $0F, $10, $00             ; DCR DMA control register
     .byte $13                       ; SATB adddress
-    .byte low(VDC_DEFAULT_SATB_ADDR)
-    .byte high(VDC_DEFAULT_SATB_ADDR)
+    .byte .lobyte(VDC_DEFAULT_SATB_ADDR)
+    .byte .hibyte(VDC_DEFAULT_SATB_ADDR)
 

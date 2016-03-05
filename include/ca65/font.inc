@@ -1,3 +1,2 @@
-.zeropage
-
-font_base: .res 2
+	.segment "ZEROPAGE"
+	font_base: .res 2
