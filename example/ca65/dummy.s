@@ -5,8 +5,8 @@ main:
 	lda #<.bank(hudson_bitmap)
 	sta _bl
 	;----------------------;
-	stw #$3000,_di
-	stw hudson_bitmap,_si
+	stw #$2200,_di
+	stw #hudson_bitmap,_si
 	stw #((hudson_bitmap_end-hudson_bitmap)>>1),_cx
 	jsr vdc_load_data
 
@@ -21,6 +21,7 @@ main:
 	;-- load palette data --;
 	lda #<.bank(hudson_bitmap)
 	sta _bl
+
 	stw #hudson_palette, _si ; source address
 	jsr map_data
 	cla
@@ -41,10 +42,10 @@ main:
 
     ldx    #$20
 @l1:
-	stw    _si, video_data
-	incw   _si
-	dex
-	bne    @l1
+    vdc_data <_si
+    incw   _si
+    dex
+    bne    @l1
 
     dey
     bne    @l0
