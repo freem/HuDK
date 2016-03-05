@@ -1,4 +1,4 @@
-.bss
+.zeropage
 
 memcpy:     .res 1
 memcpy_src: .res 2
