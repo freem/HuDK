@@ -21,15 +21,14 @@ main:
 	;-- load palette data --;
 	lda #<.bank(hudson_bitmap)
 	sta _bl
-	;----------------------;
 	stw #hudson_palette, _si ; source address
 	jsr map_data
 	cla
-	ldy #1
+	ldy #$02
 	jsr vce_load_palette
 
 	;-- setup bat --;
-	stw    #$0220, <_si
+	stw    #$0220, _si
 
 	ldx    #0
     lda    #10
@@ -38,12 +37,12 @@ main:
     ldy    #$06
 @l0:
     jsr    vdc_set_write
-    addw   #64, <_di
+    addw   #64, _di
 
     ldx    #$20
 @l1:
-	stw    <_si, video_data
-	incw   <_si
+	stw    _si, video_data
+	incw   _si
 	dex
 	bne    @l1
 
