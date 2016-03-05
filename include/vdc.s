@@ -65,7 +65,7 @@ vdc_set_bat_size:
     pha
     vdc_reg #VDC_MWR
     pla
-	.ifdef MAGICENGINE
+	.ifdef MAGICKIT
 		sta    video_data_l
 	.else
 		.ifdef CA65
