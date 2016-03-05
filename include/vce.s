@@ -55,8 +55,29 @@ vce_load_palette:
     memcpy_mode #SOURCE_INC_DEST_ALT
     memcpy_args <_si, #color_data, #32
 @l0:
+	.ifdef MAGICKIT
     jsr    memcpy
-    addw   #32, memcpy_src
+	addw   #32, memcpy_src
+	.else
+		.ifdef CA65
+			; SUPER HACKY HACK
+			jsr $2000 ; memcpy getz copied to the very beginning of ZP
+
+			;addw   #32, memcpy_src
+			; ca65 hack: ad-hoc implementation of addw/adcw
+			; among other hacks
+
+			clc
+			;lda memcpy_src
+			; SUPER HACKY HACKS COMING UP
+			lda $2001
+			adc #<32
+			sta $2001
+			lda $2002
+			adc #>32
+			sta $2002
+		.endif
+	.endif
     dey
     bne    @l0
 
