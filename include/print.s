@@ -36,24 +36,10 @@ print_char:
 @go:
     clc
     adc     <font_base
-	.ifdef MAGICKIT
-    sta     video_data_l
-	.else
-		.ifdef CA65
-			; hacky ca65 fix: absolute addressing for page 0
-			sta     a:video_data_l
-		.endif
-	.endif
+	vdc_data_l
     cla
     adc     <font_base+1
-	.ifdef MAGICKIT
-    sta     video_data_h
-	.else
-		.ifdef CA65
-			; hacky ca65 fix: absolute addressing for page 0
-			sta     a:video_data_h
-		.endif
-	.endif
+	vdc_data_h
     rts
 
 ;;
@@ -76,24 +62,10 @@ print_digit:
     adc    #FONT_DIGIT_INDEX
     clc
     adc     <font_base
-    .ifdef MAGICKIT
-    sta     video_data_l
-	.else
-		.ifdef CA65
-			; hacky ca65 fix: absolute addressing for page 0
-			sta     a:video_data_l
-		.endif
-	.endif
+    vdc_data_l
     cla
     adc     <font_base+1
-    .ifdef MAGICKIT
-    sta     video_data_h
-	.else
-		.ifdef CA65
-			; hacky ca65 fix: absolute addressing for page 0
-			sta     a:video_data_h
-		.endif
-	.endif
+    vdc_data_h
     rts
 
 ;;
