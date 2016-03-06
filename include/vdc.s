@@ -155,24 +155,23 @@ vdc_load_data:
     beq    @l2
     cly
 @l0:
-	.ifdef MAGICKIT
+    .ifdef MAGICKIT
         lda    [_si], Y
-        sta    video_data_l
+    .else
+        .ifdef CA65
+            lda    [<_si], Y
+        .endif
+    .endif
+        vdc_data_l
         iny
+    .ifdef MAGICKIT
         lda    [_si], Y
-        sta    video_data_h
-	.else
-		.ifdef CA65
-			; hacky ca65 fixes:
-			; 1) use <_si to force zero page
-			; 2) addresses in page 0 need absolute addressing (a:$0000)
-			lda    [<_si], Y
-			sta    a:video_data_l
-			iny
-			lda    [<_si], Y
-			sta    a:video_data_h
-		.endif
-	.endif
+    .else
+        .ifdef CA65
+            lda    [<_si], Y
+        .endif
+    .endif
+        vdc_data_h
 
         iny
         bne    @l1
@@ -256,31 +255,20 @@ vdc_init:
     cly
 @l0:
     lda    @vdc_init_table, Y
-	.ifdef MAGICKIT
+    .ifdef MAGICKIT
     sta    video_reg
-	.else
-		.ifdef CA65
-			sta    a:video_reg
-		.endif
-	.endif
+    .else
+        .ifdef CA65
+        sta    a:video_reg
+        .endif
+    .endif
+
     iny
     lda    @vdc_init_table, Y
-	.ifdef MAGICKIT
-    sta    video_data_l
-	.else
-		.ifdef CA65
-			sta    a:video_data_l
-		.endif
-	.endif
+    vdc_data_l
     iny
     lda    @vdc_init_table, Y
-	.ifdef MAGICKIT
-    sta    video_data_h
-	.else
-		.ifdef CA65
-			sta    a:video_data_h
-		.endif
-	.endif
+    vdc_data_h
     iny
     cpy    #36
     bne    @l0
