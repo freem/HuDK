@@ -10,21 +10,20 @@
 ;;   _di - VRAM location.
 ;;
 vdc_set_read:
-    vdc_reg #VDC_MARR
-
-	.ifdef MAGICKIT
+    vdc_reg  #VDC_MARR
+    .ifdef MAGICKIT
     stw    <_di, video_data
-	.else
-		.ifdef CA65
-			; hacky ca65 fixes:
-			; 1) use <_di to force zero page, requiring a +1 for the other half
-			; 2) addresses in page 0 need absolute addressing (a:$0000)
-			lda <_di
-			sta a:video_data_l
-			lda <_di+1
-			sta a:video_data_h
-		.endif
-	.endif
+    .else
+        .ifdef CA65
+            ; hacky ca65 fixes:
+            ; 1) use <_di to force zero page, requiring a +1 for the other half
+            ; 2) addresses in page 0 need absolute addressing (a:$0000)
+            lda <_di
+            sta a:video_data_l
+            lda <_di+1
+            sta a:video_data_h
+        .endif
+    .endif
     vdc_reg #VDC_DATA
     rts
 
@@ -36,20 +35,20 @@ vdc_set_read:
 ;;   _di - VRAM location.
 ;;
 vdc_set_write:
-    vdc_reg #VDC_MAWR
-	.ifdef MAGICKIT
+    vdc_reg  #VDC_MAWR
+    .ifdef MAGICKIT
     stw    <_di, video_data
-	.else
-		.ifdef CA65
-			; hacky ca65 fixes:
-			; 1) use <_di to force zero page, requiring a +1 for the other half
-			; 2) addresses in page 0 need absolute addressing (a:$0000)
-			lda <_di
-			sta a:video_data_l
-			lda <_di+1
-			sta a:video_data_h
-		.endif
-	.endif
+    .else
+        .ifdef CA65
+            ; hacky ca65 fixes:
+            ; 1) use <_di to force zero page, requiring a +1 for the other half
+            ; 2) addresses in page 0 need absolute addressing (a:$0000)
+            lda <_di
+            sta a:video_data_l
+            lda <_di+1
+            sta a:video_data_h
+        .endif
+    .endif
     vdc_reg #VDC_DATA
     rts
 
@@ -65,13 +64,7 @@ vdc_set_bat_size:
     pha
     vdc_reg #VDC_MWR
     pla
-	.ifdef MAGICKIT
-		sta    video_data_l
-	.else
-		.ifdef CA65
-			sta    a:video_data_l
-		.endif
-	.endif
+    vdc_data_l
     ; compute BAT dimensions
     lsr    A
     lsr    A
@@ -159,7 +152,7 @@ vdc_load_data:
         lda    [_si], Y
     .else
         .ifdef CA65
-            lda    [<_si], Y
+        lda    [<_si], Y
         .endif
     .endif
         vdc_data_l
@@ -168,11 +161,10 @@ vdc_load_data:
         lda    [_si], Y
     .else
         .ifdef CA65
-            lda    [<_si], Y
+        lda    [<_si], Y
         .endif
     .endif
         vdc_data_h
-
         iny
         bne    @l1
             inc    <_si+1
@@ -240,7 +232,6 @@ vdc_fill_bat_ex:
     bne    @l0
     rts
 
-
 ;;
 ;; function: vdc_init
 ;; Initialize VDC.
@@ -255,14 +246,7 @@ vdc_init:
     cly
 @l0:
     lda    @vdc_init_table, Y
-    .ifdef MAGICKIT
-    sta    video_reg
-    .else
-        .ifdef CA65
-        sta    a:video_reg
-        .endif
-    .endif
-
+    vdc_setreg
     iny
     lda    @vdc_init_table, Y
     vdc_data_l
