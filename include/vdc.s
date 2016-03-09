@@ -152,6 +152,7 @@ vdc_load_data:
         lda    [_si], Y
     .else
         .ifdef CA65
+		; hacky ca65 fix: force ZP
         lda    [<_si], Y
         .endif
     .endif
@@ -161,6 +162,7 @@ vdc_load_data:
         lda    [_si], Y
     .else
         .ifdef CA65
+		; hacky ca65 fix: force ZP
         lda    [<_si], Y
         .endif
     .endif
